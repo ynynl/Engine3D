@@ -78,13 +78,13 @@ public class engine3D {
 //        vec3d v6 = new vec3d(1,1,0);
 //        vec3d v7 = new vec3d(1,1,1);
 
-        vec3d v0 = new vec3d(0,0,-1);
+        vec3d v0 = new vec3d(0,0,0);
         vec3d v1 = new vec3d(0,0,2);
-        vec3d v2 = new vec3d(0,1,-1);
+        vec3d v2 = new vec3d(0,1,0);
         vec3d v3 = new vec3d(0,1,2);
-        vec3d v4 = new vec3d(1,0,-1);
+        vec3d v4 = new vec3d(1,0,0);
         vec3d v5 = new vec3d(1,0,2);
-        vec3d v6 = new vec3d(1,1,-1);
+        vec3d v6 = new vec3d(1,1,0);
         vec3d v7 = new vec3d(1,1,2);
 
         mesh cube = new mesh();
@@ -118,7 +118,7 @@ public class engine3D {
     }
 
     private static vec3d line(vec3d v1, vec3d v2) {
-        return new vec3d(v1.x - v2.x, v1.y - v2.y, v1.z - v1.z);
+        return new vec3d(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
     };
 
     public static vec3d crossProduct(vec3d startL1, vec3d endL1, vec3d startL2, vec3d endL2) {
@@ -154,72 +154,41 @@ public class engine3D {
         return matrixMultiplier(m1, m2)[0][0];
     }
 
+
     private static vec3d projection(vec3d o) {
+
         double theta = 90;
-//        double far = 1000;
-//        double near = 0;
         double canvasRatio = StdDraw.height/StdDraw.width;
         double transXY = (1/(Math.tan(theta*0.5*3.1415927/180)));
-//        double transZ = far/(far-near);
 
-//        double[][] transformMatrix = {
-//                {canvasRatio * transXY,0,0,0},
-//                {0,transXY,0,0},
-//                {0,0,transZ,1},
-//                {0,0,-near * transZ,0}
-//        };
-
-//        double[][] transformMatrix = {
-//                {canvasRatio * transXY,0,0,0},
-//                {0,transXY,0,0},
-//                {0,0,transZ,1},
-//                {0,0,0,0}
-//        };
 
         double[][] transformMatrix = {
-                {canvasRatio * transXY,0},
-                {0,transXY},
+                {canvasRatio * transXY,0,0},
+                {0,transXY,0},
+                {0,0,1}
         };
 
         double offsetZ = 5;
 
-//        double[][] m = {{o.x,o.y,o.z + offsetZ,1}};
-        double[][] m = {{o.x,o.y}};
+        /*瞎搞*/
+        double[][] m = {{o.x,o.y,o.z + offsetZ}};
 
+        if (m[0][2] < 0) {
+            m[0][2] *= -2;
+            transformMatrix[0][0] *= 2;
+            transformMatrix[1][1] *= 2;
+        }
+        /*瞎搞*/
 
         double[] m4 =  matrixMultiplier(m, transformMatrix)[0];
 
-//        vec3d transformed = new vec3d(m4[0], m4[1] ,m4[2]);
-        vec3d transformed = new vec3d(m4[0], m4[1], o.z + offsetZ);
+        vec3d transformed = new vec3d(m4[0], m4[1], m4[2]);
 
-
-        if (o.z + offsetZ != 0) {
-//            transformed.x /= Math.abs(m4[3]);
-//            transformed.y /= Math.abs(m4[3]);
-            transformed.x /= o.z + offsetZ;
-            transformed.y /= o.z + offsetZ;
-//            transformed.z /= Math.abs(m4[3]);
-//            transformed.x /= m4[3];
-//            transformed.y /= m4[3];
-//            transformed.z /= m4[3];
+        if (transformed.z != 0) {
+            transformed.x /= transformed.z;
+            transformed.y /= transformed.z;
+            transformed.z /= transformed.z;
         }
-
-//        if (m4[2] != 0) {
-//            transformed.x /= m4[2];
-//            transformed.y /= m4[2];
-//            transformed.z /= m4[2];
-//        }
-
-//        else {
-//            transformed.y = (transformed.y > 0)? far: -far;
-//            transformed.x = (transformed.x > 0)? far: -far;
-//        }
-
-//        if (offsetZ != 0) {
-//            transformed.x /= offsetZ;
-//            transformed.y /= offsetZ;
-//            transformed.z /= offsetZ;
-//        }
 
         /* scale to view. */
         transformed.x = (transformed.x + .5);
@@ -227,6 +196,44 @@ public class engine3D {
 
         return transformed;
     }
+
+    /*projection*/
+// private static vec3d projection(vec3d o) {
+//        double theta = 90;
+//        double far = 1000;
+//        double near = .1;
+//        double canvasRatio = StdDraw.height/StdDraw.width;
+//        double transXY = (1/(Math.tan(theta*0.5*3.1415927/180)));
+//        double transZ = far/(far-near);
+//
+//        double[][] transformMatrix = {
+//                {canvasRatio * transXY,0,0,0},
+//                {0,transXY,0,0},
+//                {0,0,transZ,1},
+//                {0,0,-near * transZ,0}
+//        };
+//
+//        double offsetZ = 5;
+//
+//        double[][] m = {{o.x,o.y,o.z + offsetZ,1}};
+//
+//        double[] m4 =  matrixMultiplier(m, transformMatrix)[0];
+//
+//        vec3d transformed = new vec3d(m4[0], m4[1], o.z + offsetZ);
+//
+//
+//        if (o.z + offsetZ != 0) {
+//            transformed.x /= m4[3];
+//            transformed.y /= m4[3];
+//            transformed.z /= m4[3];
+//        }
+//
+//        /* scale to view. */
+//        transformed.x = (transformed.x + .5);
+//        transformed.y = (transformed.y + .5);
+//
+//        return transformed;
+//    }
 
     private static vec3d rotation(vec3d o, double Theta, int AxisID) { // x: 0, y: 1, z:2
 
@@ -284,7 +291,16 @@ public class engine3D {
         StdDraw.line(t.b.x, t.b.y, t.c.x, t.c.y);
     }
 
+    public static void fillTri(triangle t) {
+        double [] x = {t.a.x,t.b.x,t.c.x};
+        double [] y = {t.a.y,t.b.y,t.c.y};
+
+        StdDraw.filledPolygon(x, y);
+    }
+
     public static void main(String[] args) {
+
+        StdDraw.setCanvasSize(StdDraw.width*2, StdDraw.height*2);
 
         mesh object = meshCube();
         vec3d camera = new vec3d(0,0,0);
@@ -308,15 +324,32 @@ public class engine3D {
                 triangle transformed = tri.project();
 
                 vec3d o = line(transformed.a, camera);
-                vec3d c = new vec3d(transformed.a.x - camera.x,transformed.a.y - camera.y,transformed.a.z - camera.z );
 
-                if (dotProduct(c, transformed.aNormal()) < 0) {
-                    drawTri(transformed);
-                }
+//                System.out.println(transformed.aNormal().y);
+//                System.out.println(dotProduct(o, transformed.aNormal()));
 
                 if (dotProduct(o, transformed.aNormal()) < 0) {
-                    drawTri(transformed);
+//                    drawTri(transformed);
+
+//                    System.out.println(dotProduct(o, transformed.aNormal()));
+                    double light1 = -dotProduct(new vec3d(-1,-1,1), tri.aNormal()); //-1 ~ 0
+//                    double light2 = -dotProduct(new vec3d(1,0,1), tri.aNormal()); //-1 ~ 0
+
+                    StdDraw.setPenColor(
+                            light1>0?(int) (10+20*light1):10,
+                            light1<0?(int) (10*-light1):10,
+                            light1>0?(int) (10+100*light1):10
+                    );
+
+                    fillTri(transformed);
                 }
+
+//                vec3d c = new vec3d(transformed.a.x - camera.x,transformed.a.y - camera.y,transformed.a.z - camera.z );
+//
+//                if (dotProduct(c, transformed.aNormal()) < 0) {
+//                    drawTri(transformed);
+//                }
+
             }
 
             StdDraw.show();

@@ -3,6 +3,9 @@ import static org.junit.Assert.*;
 
 public class TestMatrixMultiplier {
 
+    engine3D.vec3d v1 = new engine3D.vec3d(1,2,3);
+    engine3D.vec3d v2 = new engine3D.vec3d(1,5,7);
+
     @Test
     public void testMatrixMultiplier() {
 
@@ -67,6 +70,29 @@ public class TestMatrixMultiplier {
 //        assertEquals(expected.z, actual.z, 0.0001);
 
     }
+
+    @Test
+    public void testDotProduct() {
+
+        assertEquals(32, engine3D.dotProduct(v1,v2), 0.001);
+    }
+
+    @Test
+    public void testNormal() {
+
+        engine3D.vec3d actual =  engine3D.crossProduct(v1,v2);
+
+        assertEquals(-1, actual.x, 0.01);
+        assertEquals(-4, actual.y, 0.01);
+        assertEquals(3, actual.z, 0.01);
+
+    }
+
+
+
+
+
+
 
 
 }
