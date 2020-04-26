@@ -193,7 +193,7 @@ public class engine3D {
 
         /* scale to view. */
         transformed.x = (transformed.x + .5);
-        transformed.y = (transformed.y+ .5);
+        transformed.y = (transformed.y + .3);
 
         return transformed;
     }
@@ -252,19 +252,19 @@ public class engine3D {
             };
         }
 
-        else if  (AxisID == 1) {
-            mRotation = new double[][]{
-                    {Math.cos(Theta), 0, Math.sin(Theta)},
-                    {0, 1, 0},
-                    {-Math.sin(Theta), 0, Math.cos(Theta)},
-            };
-        }
-
-        else if (AxisID == 2) {
+        else if (AxisID == 1) {
             mRotation = new double[][]{
                     {Math.cos(Theta), Math.sin(Theta), 0},
                     {-Math.sin(Theta), Math.cos(Theta), 0},
                     {0, 0, 1},
+            };
+        }
+
+        else if  (AxisID == 2) {
+            mRotation = new double[][]{
+                    {Math.cos(Theta), 0, Math.sin(Theta)},
+                    {0, 1, 0},
+                    {-Math.sin(Theta), 0, Math.cos(Theta)},
             };
         }
 
@@ -359,14 +359,38 @@ public class engine3D {
         while (true) {
 
             /* set black background*/
-            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.setPenColor(204,204,204);
             StdDraw.filledSquare(0, 0, 1);
 
-            int i = 5846;
+            int i = 0;
+
+            if (StdDraw.isKeyPressed('W')) {
+                for (triangle tri : object.tris) {
+                    tri.rotateX(+0.1);
+                }
+            }
+
+            if (StdDraw.isKeyPressed('S')) {
+                for (triangle tri : object.tris) {
+                    tri.rotateX(-0.1);
+                }
+            }
+            if (StdDraw.isKeyPressed('A')) {
+                for (triangle tri : object.tris) {
+                    tri.rotateY(-0.1);
+                }
+            }
+            if (StdDraw.isKeyPressed('D')) {
+                for (triangle tri : object.tris) {
+                    tri.rotateY(+0.1);
+
+                }
+            }
+
+
 
             for (triangle tri : object.tris) {
 
-                StdDraw.setPenColor(StdDraw.GRAY);
 
                 tri.rotateX(0.002);
                 tri.rotateY(-0.005);
@@ -383,17 +407,23 @@ public class engine3D {
 //                    drawTri(transformed);
 
 //                    System.out.println(dotProduct(o, transformed.aNormal()));
-                    double light1 = -dotProduct(new vec3d(-1,-1,1), tri.aNormal()); //-1 ~ 0
+                    double light1 = dotProduct(new vec3d(-1,-1,1), tri.aNormal()); //-1 ~ 0
 //                    double light2 = -dotProduct(new vec3d(1,0,1), tri.aNormal()); //-1 ~ 0
+                    int red, green, blue;
+
+
 
                     StdDraw.setPenColor(
-                            light1>0?(int) (10+20*light1):10,
-                            light1<0?(int) (10*-light1):10,
-                            light1>0?(int) (10+100*light1):10
+                            (int) (124 - 60 * light1),
+                            (int) (160 - 40 * light1),
+                            (int) (130 - 60 * light1)
                     );
 
                     fillTri(transformed);
+                    drawTri(transformed);
                 }
+
+            }
 
             StdDraw.show();
             StdDraw.pause(10);
@@ -402,25 +432,6 @@ public class engine3D {
 }
 
 
-//                if (StdDraw.isKeyPressed(69)) {
-//                    camera.y +=0.1;
-//                };
-//                if (StdDraw.isKeyPressed(68)) {
-//                    camera.y -=0.1;
-//                };
-
-//                if (StdDraw.isKeyPressed('A')) {
-//                    camera.x -=0.1;
-//                    System.out.print('A');
-//                    System.out.println();
-//
-//
-//                };
-//                if (StdDraw.isKeyPressed('D')) {
-//                    camera.x +=0.1;
-//                    System.out.println('D');
-//                    System.out.println();
-//                };
 //
 //                System.out.println(camera.x);
 
