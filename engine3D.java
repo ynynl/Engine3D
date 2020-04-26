@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 public class engine3D {
@@ -154,7 +156,7 @@ public class engine3D {
         return matrixMultiplier(m1, m2)[0][0];
     }
 
-
+      /*瞎搞*/
     private static vec3d projection(vec3d o) {
 
         double theta = 90;
@@ -168,9 +170,8 @@ public class engine3D {
                 {0,0,1}
         };
 
-        double offsetZ = 5;
+        double offsetZ = 1000;
 
-        /*瞎搞*/
         double[][] m = {{o.x,o.y,o.z + offsetZ}};
 
         if (m[0][2] < 0) {
@@ -192,7 +193,7 @@ public class engine3D {
 
         /* scale to view. */
         transformed.x = (transformed.x + .5);
-        transformed.y = (transformed.y + .5);
+        transformed.y = (transformed.y+ .5);
 
         return transformed;
     }
@@ -213,7 +214,7 @@ public class engine3D {
 //                {0,0,-near * transZ,0}
 //        };
 //
-//        double offsetZ = 5;
+//        double offsetZ = 1000;
 //
 //        double[][] m = {{o.x,o.y,o.z + offsetZ,1}};
 //
@@ -298,11 +299,59 @@ public class engine3D {
         StdDraw.filledPolygon(x, y);
     }
 
+    public static mesh readOBJ(String f) {
+//        HashMap<Integer, vec3d> obj = new HashMap<>();
+        ArrayList<vec3d> obj = new ArrayList<>();
+        mesh readMesh = new mesh();
+
+        In in;
+        try {
+            in = new In(f);
+            int i = 0;
+            while (!in.isEmpty()) {
+                String s = in.readLine();
+                i +=1;
+
+                if (s.equals("")) {
+                    continue;
+                }
+
+                String arr[] = s.split(" ");
+                String header = (arr[0]);
+                if (header.equals("v")) {
+                    obj.add(new vec3d(
+                            Double.parseDouble(arr[1]),
+                            Double.parseDouble(arr[2]),
+                            Double.parseDouble(arr[3])
+                            )
+                    );
+
+//                    System.out.println(i + ": " + arr[1] + " " + arr[2] + " " + arr[3]);
+                }
+                else if (header.equals("f")) {
+                    int va = Integer.parseInt(arr[1].split("/")[0])-1;
+                    int vb = Integer.parseInt(arr[2].split("/")[0])-1;
+                    int vc = Integer.parseInt(arr[3].split("/")[0])-1;
+                    readMesh.tris.add(new triangle(obj.get(va),obj.get(vb),obj.get(vc)));
+
+//                    System.out.println(va+" " + vb+" " + vc +" ");
+                }
+            }
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e);
+        }
+        return readMesh;
+    }
+
     public static void main(String[] args) {
 
-        StdDraw.setCanvasSize(StdDraw.width*2, StdDraw.height*2);
+        StdDraw.setCanvasSize(StdDraw.width+100, StdDraw.height+100);
 
-        mesh object = meshCube();
+//        mesh object = meshCube();
+//        mesh object = readOBJ("./cube.obj");
+        mesh object = readOBJ("./cat.obj");
+
         vec3d camera = new vec3d(0,0,0);
 
         StdDraw.enableDoubleBuffering();
@@ -312,6 +361,8 @@ public class engine3D {
             /* set black background*/
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.filledSquare(0, 0, 1);
+
+            int i = 5846;
 
             for (triangle tri : object.tris) {
 
@@ -343,14 +394,6 @@ public class engine3D {
 
                     fillTri(transformed);
                 }
-
-//                vec3d c = new vec3d(transformed.a.x - camera.x,transformed.a.y - camera.y,transformed.a.z - camera.z );
-//
-//                if (dotProduct(c, transformed.aNormal()) < 0) {
-//                    drawTri(transformed);
-//                }
-
-            }
 
             StdDraw.show();
             StdDraw.pause(10);
