@@ -5,6 +5,9 @@ public class TestMatrixMultiplier {
 
     engine3D.vec3d v1 = new engine3D.vec3d(1,2,3);
     engine3D.vec3d v2 = new engine3D.vec3d(1,5,7);
+    engine3D.vec3d v3 = new engine3D.vec3d(0,1,0);
+    engine3D.vec3d v4 = new engine3D.vec3d(0,0,1);
+
 
     @Test
     public void testMatrixMultiplier() {
@@ -79,12 +82,19 @@ public class TestMatrixMultiplier {
 
     @Test
     public void testNormal() {
-
         engine3D.vec3d actual =  engine3D.crossProduct(v1,v2);
 
         assertEquals(-1, actual.x, 0.01);
         assertEquals(-4, actual.y, 0.01);
         assertEquals(3, actual.z, 0.01);
+    }
+
+    @Test
+    public  void testComparator() {
+        engine3D.triangle a = new engine3D.triangle(v1,v1,v3);
+        engine3D.triangle b = new engine3D.triangle(v1,v1,v4);
+
+//        assertTrue(b > a);
 
     }
 
